@@ -27,26 +27,20 @@ class GtagEventSender {
             return;
         }
 
-        // Проверяем, заблокирована ли Google Analytics блокировщиком рекламы
         if (this.isAnalyticsBlocked()) {
-            // Возвращаем false, чтобы событие не вызывало фатальную ошибку
             return false;
         }
 
-        // Отправляем событие
         gtag("event", event.name, event.parameters);
     }
 
-    // Обработчик события DOMContentLoaded
     onDOMContentLoaded() {
-        // Отправляем все события из очереди
         while (this.queue.length) {
             this.sendEvent(this.queue.shift());
         }
     }
 }
 
-// Создаем экземпляр класса
 const gtagEventSender = new GtagEventSender();
 
 // eventTracker.sendEvent({
