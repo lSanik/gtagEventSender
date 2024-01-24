@@ -8,6 +8,7 @@ Usage:
 To use this class, you need to create an instance of the class and then call the sendEvent() method to send an event. For example, you can use the following code:
 
 JavaScript
+```
 const gtagEventSender = new GtagEventSender();
 
 // Send an event
@@ -18,6 +19,7 @@ gtagEventSender.sendEvent({
     item_name: "Stan and Friends Tee",
   },
 });
+```
 This code will send a select_item event with parameters item_id and item_name.
 
 Functions:
