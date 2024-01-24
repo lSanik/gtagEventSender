@@ -1,7 +1,10 @@
 class GtagEventSender {
     constructor() {
         this.queue = [];
-        document.addEventListener("DOMContentLoaded", this.onDOMContentLoaded);
+        let onDOMContentLoaded = this.onDOMContentLoaded.bind(this);
+        window.onload = function (){
+            onDOMContentLoaded();
+        }
     }
 
     isPageLoaded() {
@@ -12,31 +15,38 @@ class GtagEventSender {
         return (typeof gtag === "function");
     }
 
-    isAnalyticsBlocked() {
-        return !this.isAnalyticsLoaded();
-    }
-
-    sendEvent(event) {
+    addEvent(event) {
         if (!this.isPageLoaded()) {
             this.queue.push(event);
             return;
         }
 
+        this.#privateSendEvent(event);
+    }
+
+    #privateSendEvent(event) {
+        //If not blocked by adblock, bad internet, firewall etc....
         if (!this.isAnalyticsLoaded()) {
-            this.queue.push(event);
             return;
         }
 
-        if (this.isAnalyticsBlocked()) {
-            return false;
+        if(typeof event !==  "object"){
+            console.warn('Warning! Bad data type on GtagEventSender!',event);
         }
 
-        gtag("event", event.name, event.parameters);
+        if(typeof event.name === "string" && typeof event.parameters === "object"){
+            gtag("event", event.name, event.parameters);
+        }else{
+            console.warn('Warning! Bad data type on GtagEventSender!',event);
+        }
     }
 
     onDOMContentLoaded() {
-        while (this.queue.length) {
-            this.sendEvent(this.queue.shift());
+        if (this.queue) {
+            let i;
+            for (i=0; i < this.queue.length; i++) {
+                this.#privateSendEvent(this.queue.shift());
+            }
         }
     }
 }
