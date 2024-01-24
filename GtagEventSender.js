@@ -43,7 +43,7 @@ class GtagEventSender {
 
 const gtagEventSender = new GtagEventSender();
 
-// eventTracker.sendEvent({
+// gtagEventSender.sendEvent({
 //     name: "select_item", //Event name
 //     parameters: {
 //         item_id: "SKU_12345",
