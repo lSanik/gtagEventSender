@@ -1,57 +1,67 @@
-class GtagEventSender {
-    constructor() {
-        this.queue = [];
-        let onDOMContentLoaded = this.onDOMContentLoaded.bind(this);
-        window.onload = function (){
-            onDOMContentLoaded();
-        }
-    }
+//TODO: <script async src="https://www.googletagmanager.com/gtag/js?id=XXX" onload="innitAnalytics()"></script>
 
-    isPageLoaded() {
-        return (document.readyState === "complete");
-    }
-
-    isAnalyticsLoaded() {
-        return (typeof gtag === "function");
-    }
-
-    addEvent(event) {
-        if (!this.isPageLoaded()) {
-            this.queue.push(event);
-            return;
+    class GtagEventSender {
+        constructor() {
+            this.queue = [];
         }
 
-        this.#privateSendEvent(event);
-    }
-
-    #privateSendEvent(event) {
-        //If not blocked by adblock, bad internet, firewall etc....
-        if (!this.isAnalyticsLoaded()) {
-            return;
+        isPageLoaded() {
+            return (document.readyState === "complete");
         }
 
-        if(typeof event !==  "object"){
-            console.warn('Warning! Bad data type on GtagEventSender!',event);
+        isAnalyticsInnit() {
+            return (typeof gtag === "function");
         }
 
-        if(typeof event.name === "string" && typeof event.parameters === "object"){
-            gtag("event", event.name, event.parameters);
-        }else{
-            console.warn('Warning! Bad data type on GtagEventSender!',event);
-        }
-    }
+        addEvent(event) {
+            //Page not loaded yet - add to queue
+            if (!this.isPageLoaded()) {
+                this.queue.push(event);
+                return;
+            }
+            //Google Analytics not loaded yet - add to queue
+            //Anyway if Analytics block by some reason(adblock/bad connection) - we will not send events
+            if (!this.isAnalyticsInnit()) {
+                this.queue.push(event);
+                return;
+            }
 
-    onDOMContentLoaded() {
-        if (this.queue) {
-            let i;
-            for (i=0; i < this.queue.length; i++) {
-                this.#privateSendEvent(this.queue.shift());
+            //All load, just send
+            this.#privateSendEvent(event);
+        }
+
+        #privateSendEvent(event) {
+            if(typeof event !==  "object"){
+                console.warn('Warning! Bad data type on GtagEventSender!',event);
+            }
+
+            if(typeof event.name === "string" && typeof event.parameters === "object"){
+                gtag("event", event.name, event.parameters);
+            }else{
+                console.warn('Warning! Bad data type on GtagEventSender!',event);
+            }
+        }
+
+        analyticsLoaded() {
+            console.log(gtag);
+            console.log('all good');
+            return this.onDOMContentLoaded();
+        }
+
+        onDOMContentLoaded() {
+            if (this.queue) {
+                let i;
+                for (i=0; i < this.queue.length; i++) {
+                    this.#privateSendEvent(this.queue.shift());
+                }
             }
         }
     }
-}
 
-const gtagEventSender = new GtagEventSender();
+    const gtagEventSender = new GtagEventSender();
+    function innitAnalytics(){
+        setTimeout(function (){gtagEventSender.analyticsLoaded();},200);
+    }
 
 // gtagEventSender.sendEvent({
 //     name: "select_item", //Event name
