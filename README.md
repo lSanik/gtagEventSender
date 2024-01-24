@@ -8,7 +8,7 @@ Usage:
 To use this class, you need to create an instance of the class and then call the sendEvent() method to send an event. For example, you can use the following code:
 
 JavaScript
-```
+```JavaScript
 const gtagEventSender = new GtagEventSender();
 
 // Send an event
