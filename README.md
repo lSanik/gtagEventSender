@@ -9,6 +9,7 @@ To use this class, you need to create an instance of the class and then call the
 
 JavaScript
 ```JavaScript
+//TODO: <script async src="https://www.googletagmanager.com/gtag/js?id=XXX" onload="innitAnalytics()"></script> add onload action
 const gtagEventSender = new GtagEventSender();
 
 // Send an event
